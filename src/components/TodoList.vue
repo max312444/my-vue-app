@@ -1,24 +1,34 @@
-<!--  -->
 <template>
   <ul>
-    <!-- 할 일 목록을 반복하여 TodoTtem 컴포넌트를 생성 -->
     <TodoItem 
       v-for="todo in todos" 
       :key="todo.id" 
       :todo="todo" 
       @remove-todo="$emit('remove-todo', todo.id)" 
       @toggle-todo="$emit('toggle-todo', todo.id)"
+      @edit-todo="handleEditTodo" 
     />
   </ul>
 </template>
 
 <script>
-import TodoItem from './TodoItem.vue'; // 개별 할 일 컴포넌트 가져오기
+import TodoItem from './TodoItem.vue';
 
 export default {
-  components: { TodoItem }, // TodoItem을 등록하여 사용 가능하게 함
+  components: { TodoItem },
   props: {
-    todos: Array // 부모로부터 할 일 목록 (todos) 배열을 props로 받음음
+    todos: Array
+  },
+  emits: ['remove-todo', 'toggle-todo', 'update-todos'],  // update-todos 이벤트 추가
+  setup(props, { emit }) {
+    const handleEditTodo = (id, newText) => {
+      const updatedTodos = props.todos.map(todo =>
+        todo.id === id ? { ...todo, text: newText } : todo
+      );
+      emit('update-todos', updatedTodos);  // 부모에게 업데이트된 todos 전달
+    };
+
+    return { handleEditTodo };
   }
 };
 </script>

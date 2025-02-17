@@ -1,19 +1,38 @@
-<!-- 이 코드는 할 일 항목에 대한 기능을 담당하는 컴포넌트이다. -->
 <template>
   <li>
-    <!-- 체크박스를 클릭하면 'toggler-todo' 이벤트를 부모 컴포넌트로 전달-->
     <input type="checkbox" :checked="todo.completed" @change="$emit('toggle-todo', todo.id)" />
-    <!-- 완료된 할 일은 취소선 적용 -->
-    <span :style="{ textDecoration: todo.completed ? 'line-through' : 'none' }">{{ todo.text }}</span>
-    <!-- 삭제 버튼 클릭 시 'remove-todo' 이벤트를 부모 컴포넌트로 전달-->
+    
+    <!-- 수정 모드가 아닐 때 -->
+    <span v-if="!isEditing" :style="{ textDecoration: todo.completed ? 'line-through' : 'none' }">
+      {{ todo.text }} ({{ todo.dueDate || '마감기한 없음' }})
+    </span>
+    
+    <!-- 수정 모드일 때 -->
+    <input v-else v-model="editText" @keyup.enter="saveEdit" />
+    
+    <button v-if="!isEditing" @click="isEditing = true">수정</button>
+    <button v-else @click="saveEdit">저장</button>
     <button @click="$emit('remove-todo', todo.id)">삭제</button>
   </li>
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
   props: {
-    todo: Object // 부모로부터 'todo' 객체를 props로 받음
+    todo: Object
+  },
+  setup(props, { emit }) {
+    const isEditing = ref(false);
+    const editText = ref(props.todo.text);
+
+    const saveEdit = () => {
+      emit('edit-todo', props.todo.id, editText.value);
+      isEditing.value = false;
+    };
+
+    return { isEditing, editText, saveEdit };
   }
 };
 </script>
