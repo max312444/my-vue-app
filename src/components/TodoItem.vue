@@ -1,5 +1,6 @@
 <template>
   <li>
+    
     <input type="checkbox" :checked="todo.completed" @change="$emit('toggle-todo', todo.id)" />
     
     <!-- 수정 모드가 아닐 때 -->

@@ -35,29 +35,32 @@ export default {
     // 할 일 목록이 변경될 때마다 로컬 스토리지에 저장
     watch(todos, (newTodos) => {
       localStorage.setItem('todos', JSON.stringify(newTodos)); // 변경된 todo를 Json 문자열로 변환하여 저장
-    }, { deep: true }); // 객체 내부 속성 변화도 감조하기 위해 
+    }, { deep: true }); // 객체 내부 속성 변화도 감조하기 위해 deep 옵션 설정
 
-    // 할 일 추가
+    // 새로운 할 일 추가
     const addTodo = (todo) => {
       todos.value.push({ id: Date.now(), ...todo, completed: false });
+      // 고유한 id(Date.now())를 부여하고 기본적으로 completed(완료 여부)는 false로 설정
     };
 
-    // 할 일 삭제
+    // 특정 id를 가진 할 일을 삭제하는 함수
     const removeTodo = (id) => {
       todos.value = todos.value.filter(todo => todo.id !== id);
+      // filter를 사용하여 해당 id를 가진 할 일을 제외한 새로운 배열을 생성하여 할 일 목록을 업데이트
     };
 
-    // 완료 상태 변경
+    // 할 일 완료 여부를 토글하는 함수
     const toggleTodo = (id) => {
-      const todo = todos.value.find(todo => todo.id === id);
-      if (todo) todo.completed = !todo.completed;
+      const todo = todos.value.find(todo => todo.id === id); // id가 일치하는 할 일 찾기
+      if (todo) todo.completed = !todo.completed; // 완료 여부 반전 (true <->  false)
     };
 
-    //  수정 기능 추가 
+    //  할 일 목록을 업데이트하는 함수 (Drag & Drop 시 사용 가능)
     const updateTodos = (updatedTodos) => {
-      todos.value = updatedTodos;
+      todos.value = updatedTodos; // 변경된 할 일 목록을 반영
     };
 
+    // setup 함수에서 사용할 변수와 함수 반환 (템플릿에서 사용 가능능)
     return { todos, addTodo, removeTodo, toggleTodo, updateTodos };
   }
 };
